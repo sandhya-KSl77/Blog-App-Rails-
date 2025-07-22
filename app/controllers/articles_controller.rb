@@ -1,13 +1,16 @@
 class ArticlesController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_article, only: %i[ show edit update destroy ]
 
   # GET /articles or /articles.json
   def index
-    @articles = Article.all
+    @articles = Article.includes(comments: :user).all
+    @articles = Article.order(created_at: :desc).page(params[:page]).per(2)
   end
-
-  # GET /articles/1 or /articles/1.json
+  
   def show
+    @article = Article.find(params[:id])
+    @comments = @article.comments.includes(:user).order(created_at: :desc).page(params[:page]).per(3)
   end
 
   # GET /articles/new

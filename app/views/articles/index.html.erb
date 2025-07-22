@@ -14,7 +14,21 @@
           <p class="card-text"><%= truncate(article.body, length: 100) %></p>
           <%= link_to 'Read more', article_path(article), class: 'btn btn-outline-primary btn-sm' %>
         </div>
+        <div class="card-footer">
+          <strong>Recent Comments:</strong>
+          <ul class="list-unstyled mt-2">
+            <% article.comments.last(5).each do |comment| %>
+              <li>
+                <em><%= comment.user.username if comment.user %>:</em>
+                <%= truncate(comment.body, length: 60) %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
       </div>
     </div>
   <% end %>
+</div>
+<div class="mt-4 d-flex justify-content-center">
+  <%= paginate @articles %>
 </div>

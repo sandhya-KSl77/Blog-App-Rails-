@@ -1,0 +1,17 @@
+<turbo-stream target="like-buttons-<%= @article.id %>" action="replace">
+  <template>
+    <div class="d-flex gap-3 mb-2" id="like-buttons-<%= @article.id %>">
+      <%= button_to "👍 #{@user_like&.like_type == 'like' ? 'Liked' : 'Like'} (#{@article.likes.where(like_type: 'like').count})",
+                    article_like_path(@article, like_type: 'like'),
+                    method: :post,
+                    remote: true,
+                    class: "btn #{@user_like&.like_type == 'like' ? 'btn-success' : 'btn-outline-success'} btn-sm" %>
+
+      <%= button_to "👎 #{@user_like&.like_type == 'dislike' ? 'Disliked' : 'Dislike'} (#{@article.likes.where(like_type: 'dislike').count})",
+                    article_like_path(@article, like_type: 'dislike'),
+                    method: :post,
+                    remote: true,
+                    class: "btn #{@user_like&.like_type == 'dislike' ? 'btn-danger' : 'btn-outline-danger'} btn-sm" %>
+    </div>
+  </template>
+</turbo-stream>
