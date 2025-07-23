@@ -1,5 +1,7 @@
 class User < ApplicationRecord
-  before_create :set_default_role
+  before_validation :set_default_role, on: :create
+  ROLES = %w[admin editor normal_user]
+  validates :role, inclusion: { in: ROLES }
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable,
          authentication_keys: [:username]
@@ -19,7 +21,9 @@ class User < ApplicationRecord
   accepts_nested_attributes_for :addresses, allow_destroy: true
   ROLES = %w[admin editor normal_user]
   validates :role, inclusion: { in: ROLES }
-  
+  attr_accessor :plan
+  has_one :subscription, dependent: :destroy
+
   def password_required?
     !persisted? || !password.nil? || !password_confirmation.nil?
   end

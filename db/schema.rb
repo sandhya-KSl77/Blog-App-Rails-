@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_23_072656) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_23_154807) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -81,6 +81,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_23_072656) do
     t.index ["user_id"], name: "index_likes_on_user_id"
   end
 
+  create_table "subscriptions", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "stripe_subscription_id"
+    t.string "plan"
+    t.string "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_subscriptions_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -91,6 +101,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_23_072656) do
     t.datetime "updated_at", null: false
     t.string "username"
     t.string "role"
+    t.string "stripe_customer_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true
   end
@@ -102,4 +113,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_23_072656) do
   add_foreign_key "comments", "users"
   add_foreign_key "likes", "articles"
   add_foreign_key "likes", "users"
+  add_foreign_key "subscriptions", "users"
 end
