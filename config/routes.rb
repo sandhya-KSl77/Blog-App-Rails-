@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get "users/show"
   devise_for :users, controllers: {
     registrations: 'users/registrations',
     sessions: 'users/sessions'
@@ -15,7 +16,10 @@ Rails.application.routes.draw do
   end
 
   resources :articles do
-    resources :comments
+    resources :comments, only: [:create, :destroy]
     resource :like, only: [:create]
   end
+  
+  get '/profile', to: 'users#show', as: 'user_profile'
+
 end

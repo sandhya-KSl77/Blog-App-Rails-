@@ -1,6 +1,8 @@
 class Article < ApplicationRecord
+    belongs_to :user
+    validates :user, presence: true
     validates :title, presence: true, length: { minimum: 3 }
-    validates :body, presence: true, length: { minimum: 10 }
+    validates :body, presence: true, length: { minimum: 30 }
     has_one_attached :image
     has_many :comments, dependent: :destroy
     has_many :commenters, -> { distinct }, through: :comments, source: :user

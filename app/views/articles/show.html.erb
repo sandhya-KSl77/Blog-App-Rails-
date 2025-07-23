@@ -6,6 +6,9 @@
 
 <div class="card mb-5 shadow-sm">
   <div class="card-body">
+    <p class="text-muted">
+      By <strong><%= @article.user.username %></strong>
+    </p>
     <h2 class="card-title mb-3"><%= @article.title %></h2>
     <p class="card-text"><%= simple_format(@article.body) %></p>
 

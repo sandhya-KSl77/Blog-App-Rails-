@@ -1,4 +1,6 @@
 class CommentsController < ApplicationController
+    before_action :authenticate_user!
+
     def create
       @article = Article.find(params[:article_id])
       @comment = @article.comments.build(comment_params)
@@ -14,8 +16,12 @@ class CommentsController < ApplicationController
     def destroy
       @article = Article.find(params[:article_id])
       @comment = @article.comments.find(params[:id])
-      @comment.destroy
-      redirect_to article_path(@article)
+      authorize @comment
+      if @comment.destroy
+        redirect_to article_path(@article), notice: "Comment deleted."
+      else
+        redirect_to article_path(@article), alert: "Failed to delete comment."
+      end
     end
   
     private

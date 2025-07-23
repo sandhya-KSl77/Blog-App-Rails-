@@ -1,0 +1,44 @@
+<div class="container mt-5">
+  <div class="card shadow-sm">
+    <div class="card-header bg-secondary text-white text-center">
+      <h3>User Profile</h3>
+    </div>
+
+    <div class="card-body">
+      <div class="text-center mb-3">
+        <% if @user.avatar.attached? %>
+           <%= image_tag url_for( @user.avatar), width: 100, height: 100 %>
+        <% else %>
+          <p>No avatar uploaded</p>
+        <% end %>
+      </div>
+
+      <p><strong>Username:</strong> <%= @user.username %></p>
+      <p><strong>Email:</strong> <%= @user.email %></p>
+      <p><strong>Role:</strong> <%= @user.role.capitalize %></p>
+
+      <% billing = @user.addresses.find { |a| a.address_type == "billing" } %>
+      <% mailing = @user.addresses.find { |a| a.address_type == "mailing" } %>
+
+      <hr>
+
+      <h5>Billing Address</h5>
+      <% if billing %>
+        <p><%= billing.line1 %>, <%= billing.city %>, <%= billing.zip %></p>
+      <% else %>
+        <p class="text-muted">No billing address</p>
+      <% end %>
+
+      <h5>Mailing Address</h5>
+      <% if mailing %>
+        <p><%= mailing.line1 %>, <%= mailing.city %>, <%= mailing.zip %></p>
+      <% else %>
+        <p class="text-muted">No mailing address</p>
+      <% end %>
+
+      <div class="mt-4 text-center">
+        <%= link_to 'Edit Profile', edit_user_registration_path, class: "btn btn-primary" %>
+      </div>
+    </div>
+  </div>
+</div>

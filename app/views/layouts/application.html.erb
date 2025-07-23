@@ -25,19 +25,48 @@
 
   <body>
   <% unless controller_name == 'sessions' || controller_name == 'registrations' %>
-    <nav class="navbar navbar-dark bg-dark mb-4">
-      <div class="container d-flex justify-content-between align-items-center">
-        <a class="navbar-brand" href="/">My Blog</a>
+  <nav class="navbar navbar-dark bg-dark mb-4">
+    <div class="container d-flex justify-content-between align-items-center">
+      <a class="navbar-brand" href="/">My Blog</a>
 
+      <div class="d-flex gap-2">
         <% if user_signed_in? %>
+          <%= link_to "Profile", user_profile_path, class: "btn btn-outline-light" %>
           <%= button_to "Sign Out", destroy_user_session_path, method: :delete, class: "btn btn-outline-light", data: { turbo: false } %>
         <% else %>
           <%= link_to "Sign In", new_user_session_path, class: "btn btn-outline-light" %>
         <% end %>
       </div>
-    </nav>
+    </div>
+  </nav>
   <% end %>
-  
+  <div aria-live="polite" aria-atomic="true" class="position-relative">
+  <div class="toast-container position-fixed top-0 end-0 p-3">
+
+    <% if flash[:notice] %>
+      <div class="toast align-items-center text-white bg-success border-0 show" role="alert">
+        <div class="d-flex">
+          <div class="toast-body">
+            <%= flash[:notice] %>
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+      </div>
+    <% end %>
+
+    <% if flash[:alert] %>
+      <div class="toast align-items-center text-white bg-danger border-0 show" role="alert">
+        <div class="d-flex">
+          <div class="toast-body">
+            <%= flash[:alert] %>
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+      </div>
+    <% end %>
+
+  </div>
+</div>
   <div class="container">
     <%= yield %>
   </div>
