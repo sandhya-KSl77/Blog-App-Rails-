@@ -23,6 +23,7 @@ gem "pundit"
 gem "stripe"
 gem "dotenv-rails"
 gem "sidekiq"
+gem "rspec-rails"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"
@@ -65,6 +66,7 @@ end
 
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
+  gem 'factory_bot_rails'
   gem "capybara"
   gem "selenium-webdriver"
 end

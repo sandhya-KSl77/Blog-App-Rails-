@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::Base
-  include Pundit
+  include Pundit::Authorization
   allow_browser versions: :modern
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
