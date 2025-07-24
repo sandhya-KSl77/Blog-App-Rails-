@@ -1,7 +1,5 @@
 class User < ApplicationRecord
   before_validation :set_default_role, on: :create
-  ROLES = %w[admin editor normal_user]
-  validates :role, inclusion: { in: ROLES }
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable,
          authentication_keys: [:username]
@@ -14,6 +12,7 @@ class User < ApplicationRecord
   }
 
   validates :password, presence: true, length: { minimum: 6 }, if: :password_required?
+  validates :email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   has_many :articles, dependent: :destroy
   has_many :likes, dependent: :destroy
   has_one_attached :avatar
@@ -29,12 +28,12 @@ class User < ApplicationRecord
   end
 
   def email_required?
-    false
+    true
   end
 
   def email_changed?
-    false
-  end
+    true
+  end  
 
   def billing_address
     addresses.find { |a| a.address_type == "billing" }

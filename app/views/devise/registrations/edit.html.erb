@@ -29,19 +29,13 @@
             </div>
 
             <div class="form-group mb-3">
-              <%= f.label :role, "Select Role" %>
-              <%= f.select :role, User::ROLES, {}, class: "form-control" %>
-            </div>
-
-            <div class="form-group mb-3">
               <%= f.label :username, class: "form-label" %>
               <%= f.text_field :username, class: "form-control" %>
             </div>
 
             <div class="form-group mb-3">
               <%= f.label :email, class: "form-label" %>
-              <%= f.email_field :email, class: "form-control", readonly: true %>
-              <small class="text-muted">Email can't be changed</small>
+              <%= f.email_field :email, class: "form-control" %>
             </div>
 
             <%= f.fields_for :addresses do |af| %>

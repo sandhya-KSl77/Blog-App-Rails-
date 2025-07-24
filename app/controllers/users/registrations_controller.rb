@@ -26,11 +26,17 @@ class Users::RegistrationsController < Devise::RegistrationsController
       if params[:user][:plan].present? && params[:user_stripe_token].present?
         begin
           Stripe::SubscriptionCreator.new(resource, params[:user][:plan], params[:user_stripe_token]).call
+          # UserMailer.welcome_email(resource).deliver_later
+          SendWelcomeEmailJob.perform_later(resource.id)
+  
         rescue Stripe::CardError => e
           flash[:alert] = e.message
           resource.destroy
           redirect_to new_user_registration_path and return
         end
+      else
+        # UserMailer.welcome_email(resource).deliver_later
+        SendWelcomeEmailJob.perform_later(resource.id)
       end
   
       if resource.active_for_authentication?
@@ -53,11 +59,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:sign_up, keys: [
-      :username, :name, :avatar, :plan,
+      :username, :email, :avatar, :plan,
       addresses_attributes: [:id, :line1, :line2, :city, :zip, :address_type, :_destroy]
     ])
     devise_parameter_sanitizer.permit(:account_update, keys: [
-      :username, :name, :avatar, :role,
+      :username, :avatar, :role,
       addresses_attributes: [:id, :line1, :line2, :city, :zip, :address_type, :_destroy]
     ])
   end

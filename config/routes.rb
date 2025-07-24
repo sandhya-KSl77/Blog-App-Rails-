@@ -21,5 +21,8 @@ Rails.application.routes.draw do
   end
   
   get '/profile', to: 'users#show', as: 'user_profile'
-
+  
+  require 'sidekiq/web'
+  mount Sidekiq::Web => '/sidekiq'
+  
 end

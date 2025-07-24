@@ -1,6 +1,12 @@
 class ArticlesController < ApplicationController
   before_action :authenticate_user!
   before_action :set_article, only: %i[ show edit update destroy ]
+  before_action :check_subscription, only: [:new, :create, :edit, :update]
+  def check_subscription
+    unless current_user&.subscription&.status == 'active'
+      redirect_to articles_path, alert: "You need a subscription to perform this action."
+    end
+  end
 
   # GET /articles or /articles.json
   def index
