@@ -1,7 +1,15 @@
 class ArticlesController < ApplicationController
   before_action :authenticate_user!
+  before_action :ensure_user_active!
   before_action :set_article, only: %i[ show edit update destroy ]
   before_action :check_subscription, only: [:new, :create, :edit, :update]
+
+  def ensure_user_active!
+    if current_user && !current_user.active?
+      redirect_to user_profile_path, alert: "Complete your registration before accessing articles."
+    end
+  end
+
   def check_subscription
     unless current_user&.subscription&.status == 'active'
       redirect_to articles_path, alert: "You need a subscription to perform this action."

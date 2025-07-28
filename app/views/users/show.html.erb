@@ -7,7 +7,7 @@
     <div class="card-body">
       <div class="text-center mb-3">
         <% if @user.avatar.attached? %>
-           <%= image_tag url_for( @user.avatar), width: 100, height: 100 %>
+          <%= image_tag url_for(@user.avatar), width: 100, height: 100 %>
         <% else %>
           <p>No avatar uploaded</p>
         <% end %>
@@ -16,13 +16,12 @@
       <p><strong>Username:</strong> <%= @user.username %></p>
       <p><strong>Email:</strong> <%= @user.email %></p>
       <p><strong>Role:</strong> <%= @user.role.capitalize %></p>
-
-      <% billing = @user.addresses.find { |a| a.address_type == "billing" } %>
-      <% mailing = @user.addresses.find { |a| a.address_type == "mailing" } %>
+      <p><strong>Status:</strong> <%= @user.status.humanize %></p>
 
       <hr>
 
       <h5>Billing Address</h5>
+      <% billing = @user.billing_address %>
       <% if billing %>
         <p><%= billing.line1 %>, <%= billing.city %>, <%= billing.zip %></p>
       <% else %>
@@ -30,15 +29,58 @@
       <% end %>
 
       <h5>Mailing Address</h5>
+      <% mailing = @user.mailing_address %>
       <% if mailing %>
         <p><%= mailing.line1 %>, <%= mailing.city %>, <%= mailing.zip %></p>
       <% else %>
         <p class="text-muted">No mailing address</p>
       <% end %>
 
-      <div class="mt-4 text-center">
-        <%= link_to 'Edit Profile', edit_user_registration_path, class: "btn btn-primary" %>
-      </div>
+      <hr>
+
+      <% if @user.status == 'pending_address' %>
+        <div class="mt-3 text-center">
+          <%= link_to 'Submit Address', new_users_addresses_path, class: 'btn btn-success' %>
+        </div>
+
+      <% elsif @user.status == 'pending_address_approval' %>
+        <div class="alert alert-warning text-center mt-3">
+          Address submitted. Waiting for approval.
+        </div>
+
+      <% elsif @user.status == 'start_subscription' %>
+        <div class="alert alert-info text-center mt-3">
+          Address approved. Ready to activate subscription.
+        </div>
+
+        <div class="mt-4">
+          <%= form_with url: users_subscriptions_path, method: :post, local: true, id: "subscription-form" do |f| %>
+            <div class="form-group">
+              <%= label_tag :plan, "Select a Plan" %>
+              <%= select_tag :plan, options_for_select([["Basic", "basic"], ["Professional", "professional"], ["Elite", "elite"]]), class: "form-control" %>
+            </div>
+
+            <div id="card-section" class="form-group mt-3">
+              <label>Card Details</label>
+              <div class="d-flex">
+                <div id="card-element" class="form-control w-50"></div>
+              </div>
+              <div id="card-errors" class="text-danger mt-2 text-center"></div>
+            </div>
+
+            <%= hidden_field_tag :stripe_token, nil, id: "stripe-token" %>
+
+            <div class="text-center mt-3">
+              <%= submit_tag "Start Subscription", class: "btn btn-success" %>
+            </div>
+          <% end %>
+        </div>
+
+      <% elsif @user.status == 'active' %>
+        <div class="alert alert-success text-center mt-3">
+          Your account is fully active!
+        </div>
+      <% end %>
     </div>
   </div>
 </div>

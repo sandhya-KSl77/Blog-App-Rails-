@@ -1,43 +1,16 @@
 class Users::RegistrationsController < Devise::RegistrationsController
   before_action :configure_permitted_parameters
 
-  def new
-    build_resource({})
-    resource.addresses.build(address_type: :billing)
-    resource.addresses.build(address_type: :mailing)
-    respond_with resource
-  end
-
-  def edit
-    if resource.addresses.empty?
-      resource.addresses.build(address_type: :billing)
-      resource.addresses.build(address_type: :mailing)
-    end
-    super
-  end
-
   def create
     build_resource(sign_up_params)
-  
+    resource.status = 'unverified'
     resource.save
+  
     yield resource if block_given?
   
     if resource.persisted?
-      if params[:user][:plan].present? && params[:user_stripe_token].present?
-        begin
-          Stripe::SubscriptionCreator.new(resource, params[:user][:plan], params[:user_stripe_token]).call
-          # UserMailer.welcome_email(resource).deliver_later
-          SendWelcomeEmailJob.perform_later(resource.id)
-  
-        rescue Stripe::CardError => e
-          flash[:alert] = e.message
-          resource.destroy
-          redirect_to new_user_registration_path and return
-        end
-      else
-        # UserMailer.welcome_email(resource).deliver_later
-        SendWelcomeEmailJob.perform_later(resource.id)
-      end
+      # Send welcome email
+      SendWelcomeEmailJob.perform_later(resource.id)
   
       if resource.active_for_authentication?
         set_flash_message! :notice, :signed_up
@@ -53,20 +26,15 @@ class Users::RegistrationsController < Devise::RegistrationsController
       set_minimum_password_length
       respond_with resource
     end
-  end  
+  end   
 
   protected
 
   def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up, keys: [
-      :username, :email, :avatar, :plan,
-      addresses_attributes: [:id, :line1, :line2, :city, :zip, :address_type, :_destroy]
-    ])
-    devise_parameter_sanitizer.permit(:account_update, keys: [
-      :username, :avatar, :role,
-      addresses_attributes: [:id, :line1, :line2, :city, :zip, :address_type, :_destroy]
-    ])
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:username, :email, :avatar])
+    devise_parameter_sanitizer.permit(:account_update, keys: [:username, :avatar, :role])
   end
+  
 
   def sign_up_params
     super.merge(plan: params[:user][:plan])

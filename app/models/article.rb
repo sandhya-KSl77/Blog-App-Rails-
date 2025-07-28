@@ -1,4 +1,11 @@
 class Article < ApplicationRecord
+  def self.ransackable_attributes(auth_object = nil)
+    %w[id title body user_id created_at updated_at]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    %w[user]
+  end
     belongs_to :user
     validates :user, presence: true
     validates :title, presence: true, length: { minimum: 3 }

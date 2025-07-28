@@ -1,7 +1,51 @@
 class User < ApplicationRecord
+  include AASM
+
+  aasm column: 'status' do
+    state :unverified, initial: true
+    state :pending_address
+    state :pending_address_approval
+    state :start_subscription
+    state :active
+  
+    event :verify_email do
+      transitions from: :unverified, to: :pending_address
+    end
+  
+    event :submit_address do
+      transitions from: :pending_address, to: :pending_address_approval
+    end
+  
+    event :approve_address do
+      transitions from: :pending_address_approval, to: :start_subscription
+    end
+  
+    event :activate_subscription do
+      transitions from: :start_subscription, to: :active
+    end
+  end  
+
+  def self.ransackable_attributes(auth_object = nil)
+    [
+      "id", "username", "email", "status", "role",
+      "created_at", "updated_at"
+    ]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    [
+      "addresses", "articles", "likes", "subscription"
+    ]
+  end
+
+  def after_confirmation
+    self.verify_email! if may_verify_email?
+    UserMailer.with(user: self).welcome_email.deliver_later
+  end
+
   before_validation :set_default_role, on: :create
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable,
+         :recoverable, :rememberable, :confirmable,
          authentication_keys: [:username]
 
   validates :username, presence: { message: "can't be blank" }

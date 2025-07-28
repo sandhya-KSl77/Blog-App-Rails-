@@ -1,9 +1,17 @@
 Rails.application.routes.draw do
+  devise_for :admin_users, ActiveAdmin::Devise.config
+  ActiveAdmin.routes(self)
   get "users/show"
   devise_for :users, controllers: {
-    registrations: 'users/registrations',
-    sessions: 'users/sessions'
-  }
+  registrations: 'users/registrations',
+  sessions: 'users/sessions',
+  confirmations: 'users/confirmations'
+}
+
+  namespace :users do
+    resource :addresses, only: [:new, :create]
+    resources :subscriptions, only: [:create]
+  end
 
   authenticated :user do
     root to: 'articles#index', as: :authenticated_root
