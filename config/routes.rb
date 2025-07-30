@@ -32,5 +32,29 @@ Rails.application.routes.draw do
   
   require 'sidekiq/web'
   mount Sidekiq::Web => '/sidekiq'
-  
+
+  namespace :api do
+    namespace :v1 do
+      # Devise auth routes
+      devise_for :users, path: '', path_names: {
+        sign_in: 'login',
+        sign_out: 'logout',
+        registration: 'signup'
+      },
+      controllers: {
+        sessions: 'api/v1/sessions',
+        registrations: 'api/v1/registrations'
+      }
+
+      # User routes
+      resources :users, only: [:index, :show, :create] do
+        resources :articles, only: [:index, :create]
+      end
+
+      # Article and Comment routes
+      resources :articles, only: [:index, :show, :create, :update, :destroy] do
+        resources :comments, only: [:index, :create, :destroy]
+      end
+    end
+  end
 end

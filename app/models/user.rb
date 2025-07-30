@@ -45,8 +45,10 @@ class User < ApplicationRecord
 
   before_validation :set_default_role, on: :create
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :confirmable,
-         authentication_keys: [:username]
+       :recoverable, :rememberable, :confirmable,
+       :jwt_authenticatable,
+       authentication_keys: [:username],
+       jwt_revocation_strategy: Devise::JWT::RevocationStrategies::Null
 
   validates :username, presence: { message: "can't be blank" }
   validates :username, uniqueness: { message: "already exists" }

@@ -9,8 +9,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
     yield resource if block_given?
   
     if resource.persisted?
-      # Send welcome email
-      SendWelcomeEmailJob.perform_later(resource.id)
+      # SendWelcomeEmailJob.perform_later(resource.id)
   
       if resource.active_for_authentication?
         set_flash_message! :notice, :signed_up

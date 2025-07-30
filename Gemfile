@@ -28,7 +28,9 @@ gem 'activeadmin_assets'
 gem 'cancancan'
 gem 'draper'
 gem 'aasm'
-
+gem 'active_model_serializers'
+gem 'devise-jwt'
+gem 'pry'
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"
 
